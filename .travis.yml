@@ -17,9 +17,10 @@ matrix:
         - git clone https://github.com/flutter/flutter.git
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
-        - pub global activate flutter_plugin_tools
+        - pub global activate tuneup
+        - flutter packages get
       script:
-        - pub global run flutter_plugin_tools analyze
+        - pub global run tuneup check
     # Job 2) Check format and run tests
     - os: linux
       env:
@@ -37,13 +38,17 @@ matrix:
             - fonts-droid
             - clang-format-5.0
       before_script:
+        - wget https://github.com/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar
         - git clone https://github.com/flutter/flutter.git
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
-        - pub global activate flutter_plugin_tools
       script:
-        - pub global run flutter_plugin_tools format --travis --clang-format=clang-format-5.0
-        - pub global run flutter_plugin_tools test
+        # Part 1) format
+        - flutter format ./**/*.dart
+        - java -jar google-java-format-1.3-all-deps.jar --replace ./**/*.java
+        - clang-format-5.0 -i --style=Google ./**/*.h ./**/*.m
+        # Part 2) test
+        - flutter test --color
     # Job 3) Build example APKs and run Java tests
     - os: linux
       env:
@@ -84,10 +89,8 @@ matrix:
         - git clone https://github.com/flutter/flutter.git
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
-        - pub global activate flutter_plugin_tools
       script:
-        - pub global run flutter_plugin_tools build-examples --apk
-        - pub global run flutter_plugin_tools java-test  # must come after apk build
+        - pushd example; flutter build apk; popd
     # Job 4) Build example IPAs
     - os: osx
       env:
@@ -104,9 +107,8 @@ matrix:
         - git clone https://github.com/flutter/flutter.git
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
-        - pub global activate flutter_plugin_tools
       script:
-        - pub global run flutter_plugin_tools build-examples --ipa
+        - pushd example; flutter build ios --no-codesign; popd
 
 cache:
   directories:
