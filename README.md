@@ -1,0 +1,313 @@
+# Uni Links
+
+A Flutter plugin project to help with App/Deep Links (Android) and
+Universal Links and Custom URL schemes (iOS).
+
+These links are simply web-browser-like-links that activate your app and may
+contain information that you can use to load specific section of the app or
+continue certain user activity from a website (or another app).
+
+App Links and Universal Links are regular https links, thus if the app is not
+installed (or setup correctly) they'll load in the browser, allowing you to
+present a web-page for further action, eg. install the app.
+
+
+## Installation
+
+To use the plugin, add `uni_links` as a
+[dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+
+
+### Permission
+
+Android and iOS require to declare links' permission in a configuration file.
+
+Feel free to examine tha example app in the example directory for
+Deep Links (Android) and Custom URL schemes (iOS).
+
+#### For Android
+
+Uni Links supports two types of Android links: "App Links" and "Deep Links".
+
+  * App Links only work with `https` scheme and require a specified host, plus
+  a hosted file - `assetlinks.json`. Check the Guide links below.
+  * Deep Links can have any custom scheme and do not require a host, nor a
+  hosted file. The downside is that any app can claim a scheme + host combo, so
+  make sure yours are as unique as possible, eg. `HST0000001://host.com`.
+
+You need to declare at least one of the two permissions in `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<manifest ...>
+  <!-- ... other tags -->
+  <application ...>
+    <activity ...>
+      <!-- ... other tags -->
+
+      <!-- Deep Links -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+          android:scheme="[YOUR_SCHEME]"
+          android:host="[YOUR_HOST]" />
+      </intent-filter>
+
+      <!-- App Links -->
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+          android:scheme="https"
+          android:host="[YOUR_HOST]" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>
+```
+
+The `android:host` attribute is optional for Deep Links.
+
+To further the specificity you can add an `android:pathPrefix` attribute:
+
+```xml
+<data
+  android:scheme="[YOUR_SCHEME_OR_HTTPS]"
+  android:host="[YOUR_HOST]"
+  android:pathPrefix="/[NAME][/NAME...]" />
+```
+
+For more info read
+[The Ultimate Guide](https://simonmarquis.github.io/Android-App-Linking/).
+Pay close attention to the
+[App Links](https://simonmarquis.github.io/Android-App-Linking/#app-links)
+section in the Guide regarding the required `/.well-known/assetlinks.json`
+file.
+
+The Android developer docs are also a great source of information for both
+[Deep Links and App Links](https://developer.android.com/training/app-links/deep-linking).
+
+#### For iOS
+
+There are two kinds of links in iOS: "Universal Links" and "Custom URL schemes".
+
+  * Universal Links only work with `https` scheme and require a specified host,
+  entitlements and a hosted file - `apple-app-site-association`. Check the Guide
+  links below.
+  * Custom URL schemes can have... any custom scheme and there is no host
+  specificity, nor entitlements or a hosted file. The downside is that any app
+  can claim any scheme, so make sure yours is as unique as possible,
+  eg. `hst0000001` or `myIncrediblyAwesomeScheme`.
+
+You need to declare at least one of the two.
+
+--
+
+For **Universal Links** you need to add or create a
+`com.apple.developer.associated-domains` entitlement - either through Xcode or
+by editing (or creating and adding to Xcode) `ios/Runner/Runner.entitlements`
+file.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- ... other keys -->
+  <key>com.apple.developer.associated-domains</key>
+  <array>
+    <string>applinks:[YOUR_HOST]</string>
+  </array>
+  <!-- ... other keys -->
+</dict>
+</plist>
+```
+
+At the moment Flutter v0.4.4 does not support Universal Links, so a bit of
+Objective-C code will be required in `ios/Runner/AppDelegate.m`:
+
+```obj-c
+// ... other imports
+#import <uni_links/UniLinksPlugin.h>
+
+@implementation AppDelegate
+
+// ... other methods
+
+// NOTE: Necessary, until Flutter supports
+//       `application:continueUserActivity:restorationHandler` within the
+//       `FlutterPlugin` protocol.
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
+    return [[UniLinksPlugin sharedInstance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+}
+
+@end
+```
+
+NOTE: If you get errors, make sure to run `flutter run` so the pod installation
+can occur.
+
+For more information, read Apple's guide for
+[Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
+
+--
+
+For **Custom URL schemes** you need to declare the scheme in
+`ios/Runner/Info.plist` (or through Xcode's Target Info editor,
+under URL Types):
+
+```xml
+<?xml ...>
+<!-- ... other tags -->
+<plist>
+<dict>
+  <!-- ... other tags -->
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLName</key>
+      <string>[ANY_URL_NAME]</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>[YOUR_SCHEME]</string>
+      </array>
+    </dict>
+  </array>
+  <!-- ... other tags -->
+</dict>
+</plist>
+```
+
+For a little more information, read Apple's guide for
+[Inter-App Communication](https://developer.apple.com/library/content/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/Inter-AppCommunication/Inter-AppCommunication.html).
+
+
+## Usage
+
+
+### Initial Link (String)
+
+Returns the link that the app was started with, if any.
+
+```dart
+import 'dart:async';
+import 'dart:io';
+
+import 'package:uni_links/uni_links.dart';
+
+// ...
+
+  Future<Null> initUniLinks() async {
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      String initialLink = await getInitialLink();
+      // Parse the link and warn the user, if it is not correct,
+      // but keep in mind it could be `null`.
+    } on PlatformException {
+      // Handle exception by warning the user their action did not succeed
+      // return?
+    }
+  }
+
+// ...
+```
+
+
+### Initial Link (Uri)
+
+Same as the `getInitialLink`, but converted to a `Uri`.
+
+```dart
+    // Uri parsing may fail, so we use a try/catch FormatException.
+    try {
+      Uri initialUri = await getInitialUri();
+      // Use the uri and warn the user, if it is not correct,
+      // but keep in mind it could be `null`.
+    } on FormatException {
+      // Handle exception by warning the user their action did not succeed
+      // return?
+    }
+    // ... other exception handling like PlatformException
+```
+
+One can achieve the same by using `Uri.parse(initialLink)`, which is what this
+convenience method does.
+
+
+### On change event (String)
+
+Usually you would check the `getInitialLink` and also listen for changes.
+
+```dart
+import 'dart:async';
+import 'dart:io';
+
+import 'package:uni_links/uni_links.dart';
+
+// ...
+
+  StreamSubscription _sub;
+
+  Future<Null> initUniLinks() async {
+    // ... check initialLink
+
+    // Attach a listener to the stream
+    _sub = getLinksStream().listen((String link) {
+      // Parse the link and warn the user, if it is not correct
+    }, onError: (err) {
+      // Handle exception by warning the user their action did not succeed
+    });
+
+    // NOTE: Don't forget to call _sub.cancel() in dispose()
+  }
+
+// ...
+```
+
+
+### On change event (Uri)
+
+Same as the `stream`, but transformed to emit `Uri` objects.
+
+Usually you would check the `getInitialUri` and also listen for changes.
+
+```dart
+import 'dart:async';
+import 'dart:io';
+
+import 'package:uni_links/uni_links.dart';
+
+// ...
+
+  StreamSubscription _sub;
+
+  Future<Null> initUniLinks() async {
+    // ... check initialUri
+
+    // Attach a listener to the stream
+    _sub = getUriLinksStream().listen((Uri uri) {
+      // Use the uri and warn the user, if it is not correct
+    }, onError: (err) {
+      // Handle exception by warning the user their action did not succeed
+    });
+
+    // NOTE: Don't forget to call _sub.cancel() in dispose()
+  }
+
+// ...
+```
+
+
+## Contributing
+
+For help on editing plugin code, view the
+[documentation](https://flutter.io/platform-plugins/#edit-code).
+
+
+## License
+
+BSD 2-clause
