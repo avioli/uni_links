@@ -67,6 +67,9 @@ static id _instance;
       restorationHandler:(void (^)(NSArray *_Nullable))restorationHandler {
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     self.latestLink = [userActivity.webpageURL absoluteString];
+    if (!_eventSink) {
+      self.initialLink = self.latestLink;
+    }
     return YES;
   }
   return NO;
