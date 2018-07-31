@@ -14,8 +14,8 @@ matrix:
             - libstdc++6
             - fonts-droid
       before_script:
-        - git clone https://github.com/flutter/flutter.git
-        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - git clone https://github.com/flutter/flutter.git /tmp/flutter
+        - export PATH=/tmp/flutter/bin:/tmp/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
         - pub global activate tuneup
         - flutter packages get
@@ -39,8 +39,8 @@ matrix:
             - clang-format-5.0
       before_script:
         - wget https://github.com/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar
-        - git clone https://github.com/flutter/flutter.git
-        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - git clone https://github.com/flutter/flutter.git /tmp/flutter
+        - export PATH=/tmp/flutter/bin:/tmp/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
       script:
         # Part 1) format
@@ -87,8 +87,8 @@ matrix:
         - export GRADLE_HOME=$PWD/gradle-4.1
         - export PATH=$GRADLE_HOME/bin:$PATH
         - gradle -v
-        - git clone https://github.com/flutter/flutter.git
-        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - git clone https://github.com/flutter/flutter.git /tmp/flutter
+        - export PATH=/tmp/flutter/bin:/tmp/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
       script:
         - pushd example; flutter build apk; popd
@@ -105,8 +105,8 @@ matrix:
         - brew install ios-deploy
         - pod repo update
         - gem update cocoapods
-        - git clone https://github.com/flutter/flutter.git
-        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - git clone https://github.com/flutter/flutter.git /tmp/flutter
+        - export PATH=/tmp/flutter/bin:/tmp/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
       script:
         - pushd example; flutter build ios --no-codesign; popd
