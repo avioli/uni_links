@@ -1,4 +1,4 @@
-## [0.1.2] - 2018-07-29
+## [0.1.2] - 2018-07-30
 
 * Fixed lost initialLink on iOS launch via Universal Link. (@wkornewald)
 
