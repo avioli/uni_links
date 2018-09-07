@@ -305,6 +305,66 @@ import 'package:uni_links/uni_links.dart';
 ```
 
 
+## Tools for invoking links
+
+If you register a schema, say `unilink`, you could use these cli tools:
+
+### Android
+
+You could do below tasks within [Android Studio](https://developer.android.com/studio/write/app-link-indexing#testindent).
+
+Assuming you've installed Android Studio (with the SDK platform tools):
+
+```sh
+adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://host/path/subpath"'
+adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://example.com/path/portion/?uid=123&token=abc"'
+adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://example.com/?arr%5b%5d=123&arr%5b%5d=abc&addr=1%20Nowhere%20Rd&addr=Rand%20City%F0%9F%98%82"'
+```
+
+If you don't have [`adb`](https://developer.android.com/studio/command-line/adb)
+in your path, but have `$ANDROID_HOME` env variable then use
+`"$ANDROID_HOME"/platform-tools/adb ...`.
+
+Note: Alternatively you could simply enter an `adb shell` and run the
+[`am`](https://developer.android.com/studio/command-line/adb#am) commands in it.
+
+Note: I use single quotes, because what follows the `shell` command is what will
+run in the emulator (or device) and shell metacharacters, such as question marks
+(`?`) and ampersands (`&`), usually mean something different to your own shell.
+
+`adb shell` communicates with the only available device (or emulator), so if
+you've got multiple devices you have to specify which one you want to run the
+shell in via:
+
+  * The _only_ USB connected device - `adb -d shell '...'`
+  * The _only_ emulated device - `adb -e shell '...'`
+
+You could use `adb devices` to list currently available devices (similarly
+`flutter devices` does the same job).
+
+### iOS
+
+Assuming you've got Xcode already installed:
+
+```sh
+/usr/bin/xcrun simctl openurl booted "unilinks://host/path/subpath"
+/usr/bin/xcrun simctl openurl booted "unilinks://example.com/path/portion/?uid=123&token=abc"
+/usr/bin/xcrun simctl openurl booted "unilinks://example.com/?arr%5b%5d=123&arr%5b%5d=abc&addr=1%20Nowhere%20Rd&addr=Rand%20City%F0%9F%98%82"
+```
+
+If you've got `xcrun` (or `simctl`) in your path, you could invoke it directly.
+
+The flag `booted` assumes an open simulator (you can start it via
+`open -a Simulator`) with a booted device. You could target specific device by
+specifying its UUID (found via `xcrun simctl list` or `flutter devices`),
+replacing the `booted` flag.
+
+### App Links or Universal Links
+
+These types of links use `https` for schema, thus you can use above examples by
+replacing `unilinks` with `https`.
+
+
 ## Contributing
 
 For help on editing plugin code, view the
