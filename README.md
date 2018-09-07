@@ -200,6 +200,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:uni_links/uni_links.dart';
+import 'package:flutter/services.dart' show PlatformException;
 
 // ...
 
