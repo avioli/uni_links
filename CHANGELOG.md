@@ -1,3 +1,10 @@
+## [0.1.3] - 2018-09-08
+
+* No code changes.
+* Added section in the README about Swift-enabled apps.
+* Added section in the README about tooling for invoking links from the cli.
+
+
 ## [0.1.2] - 2018-07-30
 
 * Fixed lost initialLink on iOS launch via Universal Link. (@wkornewald)
