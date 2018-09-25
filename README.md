@@ -211,6 +211,8 @@ under URL Types):
 For a little more information, read Apple's guide for
 [Inter-App Communication](https://developer.apple.com/library/content/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/Inter-AppCommunication/Inter-AppCommunication.html).
 
+I **strongly** recommend watching the [Apple WWDC 2015, session 509 - Seamless Linking to Your App](https://developer.apple.com/videos/play/wwdc2015/509/) to understand how the Universal Links work (and are setup).
+
 
 ## Usage
 
