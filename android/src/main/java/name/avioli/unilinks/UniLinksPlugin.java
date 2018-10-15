@@ -30,6 +30,11 @@ public class UniLinksPlugin
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
+    // Detect if we've been launched in background
+    if (registrar.activity() == null) {
+      return;
+    }
+
     UniLinksPlugin instance = new UniLinksPlugin(registrar);
 
     final MethodChannel mChannel = new MethodChannel(registrar.messenger(), MESSAGES_CHANNEL);
