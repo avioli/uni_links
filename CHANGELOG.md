@@ -1,3 +1,8 @@
+## [0.1.4] - 2018-10-16
+
+* [Android] Don't process links when launched in background. (@wkornewald)
+
+
 ## [0.1.3] - 2018-09-08
 
 * No code changes.
