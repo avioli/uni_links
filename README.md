@@ -37,7 +37,7 @@ Uni Links supports two types of Android links: "App Links" and "Deep Links".
   hosted file. The downside is that any app can claim a scheme + host combo, so
   make sure yours are as unique as possible, eg. `HST0000001://host.com`.
 
-You need to declare at least one of the two permissions in `android/app/src/main/AndroidManifest.xml`:
+You need to declare at least one of the two intent filters in `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 <manifest ...>
