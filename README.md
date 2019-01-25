@@ -127,54 +127,6 @@ file.
 </plist>
 ```
 
-At the moment Flutter v0.4.4 does not support Universal Links, so a bit of
-Objective-C code will be required in `ios/Runner/AppDelegate.m`:
-
-```obj-c
-// ... other imports
-#import <uni_links/UniLinksPlugin.h>
-
-@implementation AppDelegate
-
-// ... other methods
-
-// NOTE: Necessary, until Flutter supports
-//       `application:continueUserActivity:restorationHandler` within the
-//       `FlutterPlugin` protocol.
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
-    return [[UniLinksPlugin sharedInstance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-}
-
-@end
-```
-
-Alternatively for Swift enabled apps edit your bridging header file in `ios/Runner/Runner-Bridging-Header.h`:
-
-```obj-c
-#import "GeneratedPluginRegistrant.h"
-// ... other imports
-#import <uni_links/UniLinksPlugin.h>
-```
-
-Then edit the AppDelegate in `ios/Runner/AppDelegate.swift`:
-
-```swift
-// ... imports
-
-@UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate {
-    // ... other methods
-
-  override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-    return UniLinksPlugin.sharedInstance().application(application, continue: userActivity, restorationHandler: restorationHandler)
-  }
-}
-```
-
-
-NOTE: If you get errors, make sure to run `flutter run` so the pod installation
-can occur.
-
 For more information, read Apple's guide for
 [Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
 
