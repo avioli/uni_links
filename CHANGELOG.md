@@ -1,3 +1,8 @@
+## [0.2.0] - 2019-03-10
+
+**Breaking change**
+  Migrate from the deprecated original Android Support Library to AndroidX. This shouldn't result in any functional changes, but it requires any Android apps using this plugin to [also migrate](https://developer.android.com/jetpack/androidx/migrate) if they're using the original support library.
+
 ## [0.1.4] - 2018-10-16
 
 * [Android] Don't process links when launched in background. (@wkornewald)
