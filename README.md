@@ -13,6 +13,9 @@ App Links and Universal Links are regular https links, thus if the app is not
 installed (or setup correctly) they'll load in the browser, allowing you to
 present a web-page for further action, eg. install the app.
 
+Make sure you read both the Installation and the Usage guides, thoroughly,
+especiallly for App/Universal Links (the https scheme).
+
 
 ## Installation
 
@@ -26,6 +29,10 @@ Android and iOS require to declare links' permission in a configuration file.
 
 Feel free to examine tha example app in the example directory for
 Deep Links (Android) and Custom URL schemes (iOS).
+
+The following steps are not Flutter specific, but platform specific. You might
+be able to find more in-depth guides elsewhere online, by searching about App
+Links or Deep Links on Android; Universal Links or Custom URL schemas on iOS.
 
 #### For Android
 
@@ -177,6 +184,9 @@ I **strongly** recommend watching the [Apple WWDC 2015, session 509 - Seamless L
 
 ## Usage
 
+There are two ways your app will recieve a link - from cold start and brought
+from the background. More on these after the example usage in
+[More about app start from a link](#more-about-app-start-from-a-link).
 
 ### Initial Link (String)
 
@@ -290,6 +300,20 @@ import 'package:uni_links/uni_links.dart';
 
 // ...
 ```
+
+### More about app start from a link
+
+If the app was terminated (or rather not running in the background) and the OS
+must start it anew - that's a cold start. In that case, `getInitialLink` will
+have the link that started your app and the Stream won't produce a link.
+
+Alternatively - if the app was running in the background and the OS must bring
+it to the foreground the Stream will be the one to produces the link, while
+`getInitialLink` will be either `null`, or the initial link, with which the
+app was started.
+
+Because of these two situations - you should always add a check for the
+initial link (or uri) and also subscribe for a Stream of links (or URIs).
 
 
 ## Tools for invoking links
