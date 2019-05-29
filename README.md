@@ -51,6 +51,7 @@ You need to declare at least one of the two intent filters in `android/app/src/m
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
+        <!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST -->
         <data
           android:scheme="[YOUR_SCHEME]"
           android:host="[YOUR_HOST]" />
@@ -61,6 +62,7 @@ You need to declare at least one of the two intent filters in `android/app/src/m
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
+        <!-- Accepts URIs that begin with https://YOUR_HOST -->
         <data
           android:scheme="https"
           android:host="[YOUR_HOST]" />
@@ -75,6 +77,9 @@ The `android:host` attribute is optional for Deep Links.
 To further the specificity you can add an `android:pathPrefix` attribute:
 
 ```xml
+<!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST/NAME/NAME... -->
+<!-- Accepts URIs that begin with       https://YOUR_HOST/NAME/NAME... -->
+<!-- note that the leading "/" is required for pathPrefix -->
 <data
   android:scheme="[YOUR_SCHEME_OR_HTTPS]"
   android:host="[YOUR_HOST]"
@@ -127,6 +132,8 @@ file.
 </plist>
 ```
 
+This allows for your app to be started from `https://YOUR_HOST` links.
+
 For more information, read Apple's guide for
 [Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
 
@@ -159,6 +166,8 @@ under URL Types):
 </dict>
 </plist>
 ```
+
+This allows for your app to be started from `YOUR_SCHEME://ANYTHING` links.
 
 For a little more information, read Apple's guide for
 [Inter-App Communication](https://developer.apple.com/library/content/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/Inter-AppCommunication/Inter-AppCommunication.html).
