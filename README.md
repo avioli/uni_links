@@ -305,15 +305,16 @@ import 'package:uni_links/uni_links.dart';
 
 If the app was terminated (or rather not running in the background) and the OS
 must start it anew - that's a cold start. In that case, `getInitialLink` will
-have the link that started your app and the Stream won't produce a link.
+have the link that started your app and the Stream won't produce a link (at
+that point in time).
 
 Alternatively - if the app was running in the background and the OS must bring
-it to the foreground the Stream will be the one to produces the link, while
+it to the foreground the Stream will be the one to produce the link, while
 `getInitialLink` will be either `null`, or the initial link, with which the
 app was started.
 
 Because of these two situations - you should always add a check for the
-initial link (or uri) and also subscribe for a Stream of links (or URIs).
+initial link (or URI) and also subscribe for a Stream of links (or URIs).
 
 
 ## Tools for invoking links
