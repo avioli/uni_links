@@ -12,7 +12,7 @@ matrix:
             - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
           packages:
             - libstdc++6
-            - fonts-droid
+            - fonts-droid-fallback
       before_script:
         - git clone https://github.com/flutter/flutter.git /tmp/flutter
         - export PATH=/tmp/flutter/bin:/tmp/flutter/bin/cache/dart-sdk/bin:$PATH
@@ -35,7 +35,7 @@ matrix:
             - llvm-toolchain-precise # for clang-format-5.0
           packages:
             - libstdc++6
-            - fonts-droid
+            - fonts-droid-fallback
             - clang-format-5.0
       before_script:
         - wget https://github.com/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar
