@@ -3,6 +3,8 @@ package name.avioli.unilinks;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
@@ -54,8 +56,7 @@ public class UniLinksPlugin
   private void handleIntent(Context context, Intent intent, Boolean initial) {
     String action = intent.getAction();
     String dataString = intent.getDataString();
-
-    if (Intent.ACTION_VIEW.equals(action)) {
+	if (Intent.ACTION_VIEW.equals(action) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
       if (initial) initialLink = dataString;
       latestLink = dataString;
       if (changeReceiver != null) changeReceiver.onReceive(context, intent);

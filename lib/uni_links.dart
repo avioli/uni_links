@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 
@@ -74,4 +75,18 @@ Stream<Uri> getUriLinksStream() {
       },
     ),
   );
+}
+
+///iOS only, start listening for NFC URI payloads
+void startNFCSession(String dialogMsg) {
+  if(Platform.isIOS) {
+    _mChannel.invokeMethod('startNFCSession', dialogMsg);
+  }
+}
+
+///iOS only, stop listening for NFC URI payloads
+void stopNFCSession() {
+  if(Platform.isIOS) {
+    _mChannel.invokeMethod('stopNFCSession');
+  }
 }
