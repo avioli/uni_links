@@ -121,6 +121,7 @@ public class UniLinksPlugin implements FlutterPlugin, MethodChannel.MethodCallHa
 
     @Override
     public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
+        activityPluginBinding.addOnNewIntentListener(this);
         this.handleIntent(this.context, activityPluginBinding.getActivity().getIntent());
     }
 
@@ -131,6 +132,7 @@ public class UniLinksPlugin implements FlutterPlugin, MethodChannel.MethodCallHa
 
     @Override
     public void onReattachedToActivityForConfigChanges(ActivityPluginBinding activityPluginBinding) {
+        activityPluginBinding.addOnNewIntentListener(this);
         this.handleIntent(this.context, activityPluginBinding.getActivity().getIntent());
     }
 
