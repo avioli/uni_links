@@ -30,6 +30,17 @@ Future<Uri> getInitialUri() async {
   return Uri.parse(link);
 }
 
+Future<String> getLatestLink() async {
+  final String initialLink = await _mChannel.invokeMethod('getLatestLink');
+  return initialLink;
+}
+
+Future<Uri> getLatestUri() async {
+  final String link = await getLatestLink();
+  if (link == null) return null;
+  return Uri.parse(link);
+}
+
 /// Sets up a broadcast stream for receiving incoming link change events.
 ///
 /// Returns a broadcast [Stream] which emits events to listeners as follows:
