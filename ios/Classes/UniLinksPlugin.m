@@ -44,7 +44,12 @@ static id _instance;
   _latestLink = [latestLink copy];
   [self didChangeValueForKey:key];
 
-  if (_eventSink) _eventSink(_latestLink);
+  if (_eventSink) {
+    _eventSink(_latestLink);
+
+    // 这个值没有必要记录, 用完即销毁
+    _latestLink = nil;
+  }
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -78,8 +83,11 @@ static id _instance;
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"getInitialLink" isEqualToString:call.method]) {
     result(self.initialLink);
-    // } else if ([@"getLatestLink" isEqualToString:call.method]) {
-    //     result(self.latestLink);
+   } else if ([@"getLatestLink" isEqualToString:call.method]) {
+    result(self.latestLink);
+
+    // 这个值没有必要记录, 用完即销毁
+    _latestLink = nil;
   } else {
     result(FlutterMethodNotImplemented);
   }
