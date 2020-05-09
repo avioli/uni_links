@@ -12,8 +12,12 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
-public class UniLinksPlugin implements FlutterPlugin, MethodChannel.MethodCallHandler, EventChannel.StreamHandler,
-  ActivityAware, PluginRegistry.NewIntentListener {
+public class UniLinksPlugin
+        implements FlutterPlugin,
+                MethodChannel.MethodCallHandler,
+                EventChannel.StreamHandler,
+                ActivityAware,
+                PluginRegistry.NewIntentListener {
 
     private static final String MESSAGES_CHANNEL = "uni_links/messages";
     private static final String EVENTS_CHANNEL = "uni_links/events";
@@ -88,9 +92,7 @@ public class UniLinksPlugin implements FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     @Override
-    public void onDetachedFromEngine(FlutterPluginBinding flutterPluginBinding) {
-
-    }
+    public void onDetachedFromEngine(FlutterPluginBinding flutterPluginBinding) {}
 
     @Override
     public void onListen(Object o, EventChannel.EventSink eventSink) {
@@ -126,18 +128,15 @@ public class UniLinksPlugin implements FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     @Override
-    public void onDetachedFromActivityForConfigChanges() {
-
-    }
+    public void onDetachedFromActivityForConfigChanges() {}
 
     @Override
-    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding activityPluginBinding) {
+    public void onReattachedToActivityForConfigChanges(
+            ActivityPluginBinding activityPluginBinding) {
         activityPluginBinding.addOnNewIntentListener(this);
         this.handleIntent(this.context, activityPluginBinding.getActivity().getIntent());
     }
 
     @Override
-    public void onDetachedFromActivity() {
-
-    }
+    public void onDetachedFromActivity() {}
 }
