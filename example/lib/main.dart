@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  initPlatformState() async {
+  Future<void> initPlatformState() async {
     if (_type == UniLinksType.string) {
       await initPlatformStateForStringUniLinks();
     } else {
@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   }
 
   /// An implementation using a [String] link
-  initPlatformStateForStringUniLinks() async {
+  Future<void> initPlatformStateForStringUniLinks() async {
     // Attach a listener to the links stream
     _sub = getLinksStream().listen((String link) {
       if (!mounted) return;
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           if (link != null) _latestUri = Uri.parse(link);
         } on FormatException {}
       });
-    }, onError: (err) {
+    }, onError: (Object err) {
       if (!mounted) return;
       setState(() {
         _latestLink = 'Failed to get latest link: $err.';
@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     // Attach a second listener to the stream
     getLinksStream().listen((String link) {
       print('got link: $link');
-    }, onError: (err) {
+    }, onError: (Object err) {
       print('got err: $err');
     });
 
@@ -108,7 +108,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   }
 
   /// An implementation using the [Uri] convenience helpers
-  initPlatformStateForUriUniLinks() async {
+  Future<void> initPlatformStateForUriUniLinks() async {
     // Attach a listener to the Uri links stream
     _sub = getUriLinksStream().listen((Uri uri) {
       if (!mounted) return;
@@ -116,7 +116,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         _latestUri = uri;
         _latestLink = uri?.toString() ?? 'Unknown';
       });
-    }, onError: (err) {
+    }, onError: (Object err) {
       if (!mounted) return;
       setState(() {
         _latestUri = null;
@@ -127,7 +127,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     // Attach a second listener to the stream
     getUriLinksStream().listen((Uri uri) {
       print('got uri: ${uri?.path} ${uri?.queryParametersAll}');
-    }, onError: (err) {
+    }, onError: (Object err) {
       print('got err: $err');
     });
 
@@ -230,7 +230,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _cmdsCard(commands) {
+  Widget _cmdsCard(List<String> commands) {
     Widget platformCmds;
 
     if (commands == null) {
@@ -268,7 +268,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     );
   }
 
-  _handleTabChange() {
+  void _handleTabChange() {
     if (_tabController.indexIsChanging) {
       setState(() {
         _type = UniLinksType.values[_tabController.index];
@@ -277,7 +277,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     }
   }
 
-  _printAndCopy(String cmd) async {
+  Future<void> _printAndCopy(String cmd) async {
     print(cmd);
 
     await Clipboard.setData(new ClipboardData(text: cmd));
@@ -312,7 +312,7 @@ List<String> getCmds() {
 }
 
 List<Widget> intersperse(Iterable<Widget> list, Widget item) {
-  List<Widget> initialValue = [];
+  final initialValue = <Widget>[];
   return list.fold(initialValue, (all, el) {
     if (all.length != 0) all.add(item);
     all.add(el);

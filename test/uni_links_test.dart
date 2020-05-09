@@ -10,8 +10,8 @@ import 'package:uni_links/uni_links.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const MethodChannel mChannel = const MethodChannel('uni_links/messages');
-  final List<MethodCall> log = <MethodCall>[];
+  const mChannel = MethodChannel('uni_links/messages');
+  final log = <MethodCall>[];
   mChannel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);
   });
@@ -37,12 +37,12 @@ void main() {
   });
 
   test('getLinksStream', () async {
-    Stream<String> stream = getLinksStream();
+    final stream = getLinksStream();
     expect(stream, isInstanceOf<Stream<String>>());
   });
 
   test('getUriLinksStream', () async {
-    Stream<Uri> stream = getUriLinksStream();
+    final stream = getUriLinksStream();
     expect(stream, isInstanceOf<Stream<Uri>>());
   });
 }
