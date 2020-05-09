@@ -1,3 +1,8 @@
+## [0.4.0] - 2020-05-10
+
+* Reduce iOS compiler warnings #42 (@ened)
+* Fix UniLinks Plugin for Flutter 1.12.13 #55 (@markathomas)
+
 ## [0.2.1] - 2019-09-30
 
 * Updated iOS example project project files.
