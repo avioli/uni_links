@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:uni_links/uni_links.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   const MethodChannel mChannel = const MethodChannel('uni_links/messages');
   final List<MethodCall> log = <MethodCall>[];
   mChannel.setMockMethodCallHandler((MethodCall methodCall) async {

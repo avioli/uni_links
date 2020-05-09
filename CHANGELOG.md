@@ -1,3 +1,8 @@
+## [0.2.1] - 2019-09-30
+
+* Updated iOS example project project files.
+* Added NS_NONNULL macro to iOS plugin header to reduce compiler warnings.
+
 ## [0.2.0] - 2019-03-10
 
 **Breaking change**
