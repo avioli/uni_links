@@ -46,7 +46,7 @@ matrix:
         # Part 1) format
         - shopt -s globstar
         - flutter format ./**/*.dart
-        - java -jar google-java-format-1.8-all-deps.jar --replace ./**/*.java
+        - java -jar google-java-format-1.8-all-deps.jar -a --replace ./**/*.java
         - clang-format-5.0 -i --style=Google ./**/*.h ./**/*.m
         # Part 2) test
         - flutter test --color
