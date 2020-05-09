@@ -207,6 +207,23 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                   ],
             ),
             _cmdsCard(_cmds),
+            new Divider(),
+            new ListTile(
+              leading: Icon(Icons.error, color: Colors.red),
+              title: const Text(
+                'Force quit this example app',
+                style: TextStyle(color: Colors.red),
+              ),
+              onTap: () {
+                // WARNING: DO NOT USE this in production !!!
+                //          Your app will (most probably) be rejected !!!
+                if (Platform.isIOS) {
+                  exit(0);
+                } else {
+                  SystemNavigator.pop();
+                }
+              },
+            ),
           ],
         ),
       ),
