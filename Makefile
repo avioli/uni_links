@@ -10,7 +10,7 @@ help:
 format: format-java format-objective-c format-dart ## Formats all java, objective-c and dart files
 
 format-java: $(JAVA_SOURCES) ## Format Java files (*.java)
-	google-java-format --replace $^
+	google-java-format -a --replace $^
 
 format-objective-c: $(OBJC_SOURCES) ## Format Objective-C header and implementation files (*.h, *.m)
 	clang-format -i --style=Google $^
