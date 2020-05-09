@@ -1,7 +1,7 @@
 .PHONY: help
 
 OBJC_SOURCES := $(shell find . \( -path './example/ios/Runner*' -o -path './ios/Classes/*' \) -a \( -name '*.h' -o -name '*.m' \))
-JAVA_SOURCES := $(shell find . -name '*.java')
+JAVA_SOURCES := $(shell find . -not -path './example/build/app/generated*' -name '*.java')
 DART_SOURCES := $(shell find . -name '*.dart')
 
 help:
