@@ -15,6 +15,8 @@ class MyApp extends StatefulWidget {
 enum UniLinksType { string, uri }
 
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
+  String _initialLink;
+  Uri _initialUri;
   String _latestLink = 'Unknown';
   Uri _latestUri;
 
@@ -81,19 +83,17 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     });
 
     // Get the latest link
-    String initialLink;
-    Uri initialUri;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      initialLink = await getInitialLink();
-      print('initial link: $initialLink');
-      if (initialLink != null) initialUri = Uri.parse(initialLink);
+      _initialLink = await getInitialLink();
+      print('initial link: $_initialLink');
+      if (_initialLink != null) _initialUri = Uri.parse(_initialLink);
     } on PlatformException {
-      initialLink = 'Failed to get initial link.';
-      initialUri = null;
+      _initialLink = 'Failed to get initial link.';
+      _initialUri = null;
     } on FormatException {
-      initialLink = 'Failed to parse the initial link as Uri.';
-      initialUri = null;
+      _initialLink = 'Failed to parse the initial link as Uri.';
+      _initialUri = null;
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -102,8 +102,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     if (!mounted) return;
 
     setState(() {
-      _latestLink = initialLink;
-      _latestUri = initialUri;
+      _latestLink = _initialLink;
+      _latestUri = _initialUri;
     });
   }
 
@@ -132,20 +132,18 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     });
 
     // Get the latest Uri
-    Uri initialUri;
-    String initialLink;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      initialUri = await getInitialUri();
-      print('initial uri: ${initialUri?.path}'
-          ' ${initialUri?.queryParametersAll}');
-      initialLink = initialUri?.toString();
+      _initialUri = await getInitialUri();
+      print('initial uri: ${_initialUri?.path}'
+          ' ${_initialUri?.queryParametersAll}');
+      _initialLink = _initialUri?.toString();
     } on PlatformException {
-      initialUri = null;
-      initialLink = 'Failed to get initial uri.';
+      _initialUri = null;
+      _initialLink = 'Failed to get initial uri.';
     } on FormatException {
-      initialUri = null;
-      initialLink = 'Bad parse the initial link as Uri.';
+      _initialUri = null;
+      _initialLink = 'Bad parse the initial link as Uri.';
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -154,8 +152,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     if (!mounted) return;
 
     setState(() {
-      _latestUri = initialUri;
-      _latestLink = initialLink;
+      _latestUri = _initialUri;
+      _latestLink = _initialLink;
     });
   }
 
@@ -180,6 +178,10 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           shrinkWrap: true,
           padding: const EdgeInsets.all(8.0),
           children: <Widget>[
+            new ListTile(
+              title: const Text('Initial Link'),
+              subtitle: new Text('$_initialLink'),
+            ),
             new ListTile(
               title: const Text('Link'),
               subtitle: new Text('$_latestLink'),
