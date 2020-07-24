@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uni_links/uni_links.dart';
@@ -11,10 +12,13 @@ import 'package:uni_links/uni_links.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const mChannel = MethodChannel('uni_links/messages');
+  const eChannel = MethodChannel('uni_links/events');
   final log = <MethodCall>[];
   mChannel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);
   });
+
+  eChannel.setMockMethodCallHandler((MethodCall methodCall) async {});
 
   tearDown(() {
     log.clear();
@@ -44,5 +48,37 @@ void main() {
   test('getUriLinksStream', () async {
     final stream = getUriLinksStream();
     expect(stream, isInstanceOf<Stream<Uri>>());
+  });
+
+  group('Links with stream', () {
+    final events = <String>[];
+    StreamSubscription<String> _subscription;
+
+    setUp(() {
+      events.clear();
+      _subscription = getLinksStream().listen((event) {
+        events.add(event);
+      });
+    });
+
+    tearDown(() {
+      _subscription?.cancel();
+      _subscription = null;
+    });
+
+    test('Stream receives single link', () async {
+      const testLink = 'some-test-url';
+      await addLinkToStream(testLink);
+      expect(events, [testLink]);
+    });
+
+    test('Stream receives all links', () async {
+      const links = ['lnk1', 'lnk2', 'lnk3'];
+      for (final link in links) {
+        await addLinkToStream(link);
+      }
+
+      expect(events, links);
+    });
   });
 }
