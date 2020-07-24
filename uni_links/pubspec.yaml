@@ -6,11 +6,12 @@ homepage: https://github.com/avioli/uni_links
 dependencies:
   flutter:
     sdk: flutter
+  uni_links_platform_interface: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.9.0
+  # pedantic: ^1.9.0 # can't include due to bug. More details at analysis_options.yaml
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

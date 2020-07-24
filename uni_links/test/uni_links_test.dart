@@ -1,13 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:uni_links_platform_interface/in_memory_uni_links.dart';
+import 'package:uni_links_platform_interface/uni_links_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -53,8 +50,12 @@ void main() {
   group('Links with stream', () {
     final events = <String>[];
     StreamSubscription<String> _subscription;
+    StreamController<String> _links;
 
     setUp(() {
+      _links = StreamController<String>(sync: true);
+      UniLinksPlatform.instance = InMemoryUniLinks(streamController: _links);
+
       events.clear();
       _subscription = getLinksStream().listen((event) {
         events.add(event);
@@ -68,14 +69,14 @@ void main() {
 
     test('Stream receives single link', () async {
       const testLink = 'some-test-url';
-      await addLinkToStream(testLink);
+      _links.add(testLink);
       expect(events, [testLink]);
     });
 
     test('Stream receives all links', () async {
       const links = ['lnk1', 'lnk2', 'lnk3'];
       for (final link in links) {
-        await addLinkToStream(link);
+        _links.add(link);
       }
 
       expect(events, links);

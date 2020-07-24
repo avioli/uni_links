@@ -1,48 +1,20 @@
-// Copyright 2018 Evo Stamatov. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-
-const MethodChannel _mChannel = MethodChannel('uni_links/messages');
-const EventChannel _eChannel = EventChannel('uni_links/events');
-Stream<String> _stream;
-
-/// Add a link to the stream as if it the user was clicked on it.
-/// Used for testing
-/// do NOT call this method in sequence. That is, if you want to add
-/// multiple links to the stream, wait until the 1st Future has completed
-/// before sending a 2nd one, and so on.
-@visibleForTesting
-Future<void> addLinkToStream(String link) {
-  return ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
-      'uni_links/events',
-      const StandardMethodCodec().encodeSuccessEnvelope(link),
-      (ByteData data) {});
-}
+import 'package:uni_links_platform_interface/uni_links_platform_interface.dart';
 
 /// Returns a [Future], which completes to one of the following:
 ///
 ///   * the initially stored link (possibly null), on successful invocation;
 ///   * a [PlatformException], if the invocation failed in the platform plugin.
-Future<String> getInitialLink() async {
-  final initialLink = await _mChannel.invokeMethod<String>('getInitialLink');
-  return initialLink;
-}
+Future<String> getInitialLink() => UniLinksPlatform.instance.getInitialLink();
 
 /// A convenience method that returns the initially stored link
 /// as a new [Uri] object.
 ///
 /// If the link is not valid as a URI or URI reference,
 /// a [FormatException] is thrown.
-Future<Uri> getInitialUri() async {
-  final link = await getInitialLink();
-  if (link == null) return null;
-  return Uri.parse(link);
-}
+Future<Uri> getInitialUri() => UniLinksPlatform.instance.getInitialUri();
 
 /// Sets up a broadcast stream for receiving incoming link change events.
 ///
@@ -60,8 +32,7 @@ Future<Uri> getInitialUri() async {
 ///
 /// If the app was stared by a link intent or user activity the stream will
 /// not emit that initial one - query either the `getInitialLink` instead.
-Stream<String> getLinksStream() =>
-    _stream ??= _eChannel.receiveBroadcastStream().cast<String>();
+Stream<String> getLinksStream() => UniLinksPlatform.instance.getLinksStream();
 
 /// A convenience transformation of the stream to a `Stream<Uri>`.
 ///
@@ -72,16 +43,5 @@ Stream<String> getLinksStream() =>
 ///
 /// If the app was stared by a link intent or user activity the stream will
 /// not emit that initial uri - query either the `getInitialUri` instead.
-Stream<Uri> getUriLinksStream() {
-  return getLinksStream().transform<Uri>(
-    StreamTransformer<String, Uri>.fromHandlers(
-      handleData: (String link, EventSink<Uri> sink) {
-        if (link == null) {
-          sink.add(null);
-        } else {
-          sink.add(Uri.parse(link));
-        }
-      },
-    ),
-  );
-}
+Stream<Uri> getUriLinksStream() =>
+    UniLinksPlatform.instance.getUriLinksStream();
