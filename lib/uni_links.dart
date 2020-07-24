@@ -4,11 +4,25 @@
 
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 const MethodChannel _mChannel = MethodChannel('uni_links/messages');
 const EventChannel _eChannel = EventChannel('uni_links/events');
 Stream<String> _stream;
+
+/// Add a link to the stream as if it the user was clicked on it.
+/// Used for testing
+/// do NOT call this method in sequence. That is, if you want to add
+/// multiple links to the stream, wait until the 1st Future has completed
+/// before sending a 2nd one, and so on.
+@visibleForTesting
+Future<void> addLinkToStream(String link) {
+  return ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+      'uni_links/events',
+      const StandardMethodCodec().encodeSuccessEnvelope(link),
+      (ByteData data) {});
+}
 
 /// Returns a [Future], which completes to one of the following:
 ///
