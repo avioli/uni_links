@@ -1,8 +1,12 @@
 package name.avioli.unilinks;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import androidx.annotation.Nullable;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -27,6 +31,7 @@ public class UniLinksPlugin
     private String initialLink;
     private String latestLink;
     private Context context;
+    private Activity mainActivity;
     private boolean initialIntent = true;
 
     private void handleIntent(Context context, Intent intent) {
@@ -85,10 +90,15 @@ public class UniLinksPlugin
 
         final UniLinksPlugin instance = new UniLinksPlugin();
         instance.context = registrar.context();
+        instance.setActivity(registrar.activity());
         register(registrar.messenger(), instance);
 
         instance.handleIntent(registrar.context(), registrar.activity().getIntent());
         registrar.addNewIntentListener(instance);
+    }
+
+    private void setActivity(@Nullable Activity flutterActivity) {
+        this.mainActivity = flutterActivity;
     }
 
     @Override
@@ -106,13 +116,23 @@ public class UniLinksPlugin
 
     @Override
     public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+        Intent intent = mainActivity.getIntent();
+
         if (call.method.equals("getInitialLink")) {
-            result.success(initialLink);
+            if (mainActivity != null && !launchedActivityFromHistory(intent)) {
+                result.success(initialLink);
+            } else {
+                result.success(null);
+            }
         } else if (call.method.equals("getLatestLink")) {
             result.success(latestLink);
         } else {
             result.notImplemented();
         }
+    }
+
+    private boolean launchedActivityFromHistory(Intent intent) {
+        return intent != null && (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY;
     }
 
     @Override
@@ -123,20 +143,26 @@ public class UniLinksPlugin
 
     @Override
     public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
+        setActivity(activityPluginBinding.getActivity());
         activityPluginBinding.addOnNewIntentListener(this);
         this.handleIntent(this.context, activityPluginBinding.getActivity().getIntent());
     }
 
     @Override
-    public void onDetachedFromActivityForConfigChanges() {}
+    public void onDetachedFromActivityForConfigChanges() {
+        setActivity(null);
+    }
 
     @Override
     public void onReattachedToActivityForConfigChanges(
             ActivityPluginBinding activityPluginBinding) {
+        setActivity(activityPluginBinding.getActivity());
         activityPluginBinding.addOnNewIntentListener(this);
         this.handleIntent(this.context, activityPluginBinding.getActivity().getIntent());
     }
 
     @Override
-    public void onDetachedFromActivity() {}
+    public void onDetachedFromActivity() {
+        setActivity(null);
+    }
 }
