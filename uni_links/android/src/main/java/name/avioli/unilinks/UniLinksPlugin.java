@@ -3,6 +3,9 @@ package name.avioli.unilinks;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import androidx.annotation.NonNull;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -43,6 +46,7 @@ public class UniLinksPlugin
         }
     }
 
+    @NonNull
     private BroadcastReceiver createChangeReceiver(final EventChannel.EventSink events) {
         return new BroadcastReceiver() {
             @Override
@@ -63,9 +67,9 @@ public class UniLinksPlugin
     }
 
     @Override
-    public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
         this.context = flutterPluginBinding.getApplicationContext();
-        register(flutterPluginBinding.getFlutterEngine().getDartExecutor(), this);
+        register(flutterPluginBinding.getBinaryMessenger(), this);
     }
 
     private static void register(BinaryMessenger messenger, UniLinksPlugin plugin) {
@@ -77,7 +81,7 @@ public class UniLinksPlugin
     }
 
     /** Plugin registration. */
-    public static void registerWith(PluginRegistry.Registrar registrar) {
+    public static void registerWith(@NonNull PluginRegistry.Registrar registrar) {
         // Detect if we've been launched in background
         if (registrar.activity() == null) {
             return;
@@ -92,7 +96,7 @@ public class UniLinksPlugin
     }
 
     @Override
-    public void onDetachedFromEngine(FlutterPluginBinding flutterPluginBinding) {}
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {}
 
     @Override
     public void onListen(Object o, EventChannel.EventSink eventSink) {
@@ -105,7 +109,7 @@ public class UniLinksPlugin
     }
 
     @Override
-    public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+    public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         if (call.method.equals("getInitialLink")) {
             result.success(initialLink);
         } else if (call.method.equals("getLatestLink")) {
@@ -122,7 +126,7 @@ public class UniLinksPlugin
     }
 
     @Override
-    public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
         activityPluginBinding.addOnNewIntentListener(this);
         this.handleIntent(this.context, activityPluginBinding.getActivity().getIntent());
     }
@@ -132,7 +136,7 @@ public class UniLinksPlugin
 
     @Override
     public void onReattachedToActivityForConfigChanges(
-            ActivityPluginBinding activityPluginBinding) {
+            @NonNull ActivityPluginBinding activityPluginBinding) {
         activityPluginBinding.addOnNewIntentListener(this);
         this.handleIntent(this.context, activityPluginBinding.getActivity().getIntent());
     }
