@@ -1,0 +1,18 @@
+name: uni_links_platform_interface
+description: The platform interface for the uni_links plugin.
+version: 1.0.0
+homepage: https://github.com/avioli/uni_links/tree/master/uni_links_platform_interface
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^1.1.0-nullsafety.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  pedantic: ^1.10.0-nullsafety.3
+
+environment:
+  sdk: ">=2.12.0-0 <3.0.0"
+  flutter: ">=1.12.0 <2.0.0"

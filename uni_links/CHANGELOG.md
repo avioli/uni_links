@@ -1,3 +1,11 @@
+## [0.5.0] - 2020-12-28
+
+**Breaking changes**  
+Due to the migration to null safety, some APIs have changed. These changes mainly involve functions changing into getters, and types becoming explicitly nullable.  
+The changes to the example package are a good example of how to upgrade to this version.
+* Support null safety.
+* Migrate to the federated plugin architecture, paving the way for Web support in the future.
+
 ## [0.4.0] - 2020-05-10
 
 * Reduce iOS compiler warnings #42 (@ened)

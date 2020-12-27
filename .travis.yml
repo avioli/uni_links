@@ -43,6 +43,8 @@ matrix:
         - export PATH=/tmp/flutter/bin:/tmp/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
       script:
+        ## uni_links_platform_interface
+        - cd uni_links_platform_interface
         # Part 1) format
         - shopt -s globstar
         - flutter format ./**/*.dart
@@ -50,6 +52,17 @@ matrix:
         - clang-format-5.0 -i --style=Google ./**/*.h ./**/*.m
         # Part 2) test
         - flutter test --color
+        - cd ..
+        ## uni_links
+        - cd uni_links
+        # Part 1) format
+        - shopt -s globstar
+        - flutter format ./**/*.dart
+        - java -jar google-java-format-1.8-all-deps.jar -a --replace ./**/*.java
+        - clang-format-5.0 -i --style=Google ./**/*.h ./**/*.m
+        # Part 2) test
+        - flutter test --color
+        - cd ..
     # Job 3) Build example APKs and run Java tests
     # - os: linux
     #   env:
