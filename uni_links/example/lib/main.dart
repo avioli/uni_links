@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uni_links/uni_links.dart';
@@ -56,29 +57,31 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   /// An implementation using a [String] link
   Future<void> initPlatformStateForStringUniLinks() async {
     // Attach a listener to the links stream
-    _sub = linkStream.listen((String? link) {
-      if (!mounted) return;
-      setState(() {
-        _latestLink = link ?? 'Unknown';
-        _latestUri = null;
-        try {
-          if (link != null) _latestUri = Uri.parse(link);
-        } on FormatException {}
+    if (!kIsWeb)
+      _sub = linkStream.listen((String? link) {
+        if (!mounted) return;
+        setState(() {
+          _latestLink = link ?? 'Unknown';
+          _latestUri = null;
+          try {
+            if (link != null) _latestUri = Uri.parse(link);
+          } on FormatException {}
+        });
+      }, onError: (Object err) {
+        if (!mounted) return;
+        setState(() {
+          _latestLink = 'Failed to get latest link: $err.';
+          _latestUri = null;
+        });
       });
-    }, onError: (Object err) {
-      if (!mounted) return;
-      setState(() {
-        _latestLink = 'Failed to get latest link: $err.';
-        _latestUri = null;
-      });
-    });
 
     // Attach a second listener to the stream
-    linkStream.listen((String? link) {
-      print('got link: $link');
-    }, onError: (Object err) {
-      print('got err: $err');
-    });
+    if (!kIsWeb)
+      linkStream.listen((String? link) {
+        print('got link: $link');
+      }, onError: (Object err) {
+        print('got err: $err');
+      });
 
     // Get the latest link
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -108,26 +111,28 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   /// An implementation using the [Uri] convenience helpers
   Future<void> initPlatformStateForUriUniLinks() async {
     // Attach a listener to the Uri links stream
-    _sub = uriLinkStream.listen((Uri? uri) {
-      if (!mounted) return;
-      setState(() {
-        _latestUri = uri;
-        _latestLink = uri?.toString() ?? 'Unknown';
+    if (!kIsWeb)
+      _sub = uriLinkStream.listen((Uri? uri) {
+        if (!mounted) return;
+        setState(() {
+          _latestUri = uri;
+          _latestLink = uri?.toString() ?? 'Unknown';
+        });
+      }, onError: (Object err) {
+        if (!mounted) return;
+        setState(() {
+          _latestUri = null;
+          _latestLink = 'Failed to get latest link: $err.';
+        });
       });
-    }, onError: (Object err) {
-      if (!mounted) return;
-      setState(() {
-        _latestUri = null;
-        _latestLink = 'Failed to get latest link: $err.';
-      });
-    });
 
     // Attach a second listener to the stream
-    uriLinkStream.listen((Uri? uri) {
-      print('got uri: ${uri?.path} ${uri?.queryParametersAll}');
-    }, onError: (Object err) {
-      print('got err: $err');
-    });
+    if (!kIsWeb)
+      uriLinkStream.listen((Uri? uri) {
+        print('got uri: ${uri?.path} ${uri?.queryParametersAll}');
+      }, onError: (Object err) {
+        print('got err: $err');
+      });
 
     // Get the latest Uri
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -178,10 +183,11 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
             title: const Text('Initial Link'),
             subtitle: Text('$_initialLink'),
           ),
-          ListTile(
-            title: const Text('Link'),
-            subtitle: Text('$_latestLink'),
-          ),
+          if (!kIsWeb)
+            ListTile(
+              title: const Text('Link'),
+              subtitle: Text('$_latestLink'),
+            ),
           ListTile(
             title: const Text('Uri Path'),
             subtitle: Text('${_latestUri?.path}'),
@@ -193,7 +199,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 ? const [
                     ListTile(
                       dense: true,
-                      title: Text('null'),
+                      title: const Text('null'),
                     ),
                   ]
                 : [
@@ -214,16 +220,27 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
               'Force quit this example app',
               style: TextStyle(color: Colors.red),
             ),
-            onTap: () {
-              // WARNING: DO NOT USE this in production !!!
-              //          Your app will (most probably) be rejected !!!
-              if (Platform.isIOS) {
-                exit(0);
-              } else {
-                SystemNavigator.pop();
-              }
-            },
           ),
+          _cmdsCard(_cmds),
+          const Divider(),
+          if (!kIsWeb)
+            ListTile(
+              leading: const Icon(Icons.error, color: Colors.red),
+              title: const Text(
+                'Force quit this example app',
+                style: TextStyle(color: Colors.red),
+              ),
+              onTap: () {
+                if (kIsWeb) return;
+                // WARNING: DO NOT USE this in production !!!
+                //          Your app will (most probably) be rejected !!!
+                if (Platform.isIOS) {
+                  exit(0);
+                } else {
+                  SystemNavigator.pop();
+                }
+              },
+            ),
         ],
       ),
     );
@@ -290,7 +307,10 @@ List<String>? getCmds() {
   late final String cmd;
   var cmdSuffix = '';
 
-  if (Platform.isIOS) {
+  if (kIsWeb) {
+    cmd = 'Append something like the path in';
+    cmdSuffix = ' to the Web app\'s URL';
+  } else if (Platform.isIOS) {
     cmd = '/usr/bin/xcrun simctl openurl booted';
   } else if (Platform.isAndroid) {
     cmd = '\$ANDROID_HOME/platform-tools/adb shell \'am start'

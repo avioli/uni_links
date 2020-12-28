@@ -1,0 +1,28 @@
+name: uni_links_web
+description: A web implementation of the Uni Links platform interface.
+version: 0.1.0
+homepage: https://github.com/avioli/uni_links/tree/master/uni_links_web
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  uni_links_platform_interface:
+    path: '../uni_links_platform_interface' # TODO this must change to a version from pub.dev before publishing
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  pedantic: ^1.10.0-nullsafety.3
+
+environment:
+  sdk: ">=2.12.0-0 <3.0.0"
+  flutter: ">=1.12.0 <2.0.0"
+
+flutter:
+  plugin:
+    platforms:
+      web:
+        pluginClass: UniLinksPlugin
+        fileName: 'uni_links_web.dart'
