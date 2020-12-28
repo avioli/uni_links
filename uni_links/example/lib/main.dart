@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uni_links/uni_links.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MaterialApp(home: MyApp()));
 
 class MyApp extends StatefulWidget {
   @override
@@ -159,74 +159,72 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     final queryParams = _latestUri?.queryParametersAll.entries.toList();
 
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(text: 'STRING LINK'),
-              Tab(text: 'URI'),
-            ],
-          ),
-        ),
-        body: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(8.0),
-          children: [
-            ListTile(
-              title: const Text('Initial Link'),
-              subtitle: Text('$_initialLink'),
-            ),
-            ListTile(
-              title: const Text('Link'),
-              subtitle: Text('$_latestLink'),
-            ),
-            ListTile(
-              title: const Text('Uri Path'),
-              subtitle: Text('${_latestUri?.path}'),
-            ),
-            ExpansionTile(
-              initiallyExpanded: true,
-              title: const Text('Query params'),
-              children: queryParams == null
-                  ? const [
-                      ListTile(
-                        dense: true,
-                        title: Text('null'),
-                      ),
-                    ]
-                  : [
-                      for (final item in queryParams)
-                        ListTile(
-                          title: Text(item.key),
-                          trailing: Text(
-                            item.value.join(', '),
-                          ),
-                        ),
-                    ],
-            ),
-            _cmdsCard(_cmds),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.error, color: Colors.red),
-              title: const Text(
-                'Force quit this example app',
-                style: TextStyle(color: Colors.red),
-              ),
-              onTap: () {
-                // WARNING: DO NOT USE this in production !!!
-                //          Your app will (most probably) be rejected !!!
-                if (Platform.isIOS) {
-                  exit(0);
-                } else {
-                  SystemNavigator.pop();
-                }
-              },
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'STRING LINK'),
+            Tab(text: 'URI'),
           ],
         ),
+      ),
+      body: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(8.0),
+        children: [
+          ListTile(
+            title: const Text('Initial Link'),
+            subtitle: Text('$_initialLink'),
+          ),
+          ListTile(
+            title: const Text('Link'),
+            subtitle: Text('$_latestLink'),
+          ),
+          ListTile(
+            title: const Text('Uri Path'),
+            subtitle: Text('${_latestUri?.path}'),
+          ),
+          ExpansionTile(
+            initiallyExpanded: true,
+            title: const Text('Query params'),
+            children: queryParams == null
+                ? const [
+                    ListTile(
+                      dense: true,
+                      title: Text('null'),
+                    ),
+                  ]
+                : [
+                    for (final item in queryParams)
+                      ListTile(
+                        title: Text(item.key),
+                        trailing: Text(
+                          item.value.join(', '),
+                        ),
+                      ),
+                  ],
+          ),
+          _cmdsCard(_cmds),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.error, color: Colors.red),
+            title: const Text(
+              'Force quit this example app',
+              style: TextStyle(color: Colors.red),
+            ),
+            onTap: () {
+              // WARNING: DO NOT USE this in production !!!
+              //          Your app will (most probably) be rejected !!!
+              if (Platform.isIOS) {
+                exit(0);
+              } else {
+                SystemNavigator.pop();
+              }
+            },
+          ),
+        ],
       ),
     );
   }
