@@ -11,6 +11,8 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
+import android.nfc.NfcAdapter;
+import android.util.Log;
 
 public class UniLinksPlugin
         implements FlutterPlugin,
@@ -33,7 +35,12 @@ public class UniLinksPlugin
         String action = intent.getAction();
         String dataString = intent.getDataString();
 
-        if (Intent.ACTION_VIEW.equals(action)) {
+        // view incoming intents for purpose of adding future 'missing' actions to support new intents
+        //Log.d( "UniLinks", "handleIntent" );
+        //Log.d( "UniLinks", "action="+action );
+        //Log.d( "UniLinks", "dataString="+dataString );
+
+        if (Intent.ACTION_VIEW.equals(action) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action) ) {
             if (initialIntent) {
                 initialLink = dataString;
                 initialIntent = false;
