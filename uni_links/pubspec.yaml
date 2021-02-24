@@ -8,6 +8,8 @@ dependencies:
     sdk: flutter
   uni_links_platform_interface:
     path: '../uni_links_platform_interface' # TODO this must change to a version from pub.dev before publishing
+  uni_links_web:
+    path: '../uni_links_web' # TODO this must change to a version from pub.dev before publishing
 
 dev_dependencies:
   flutter_test:
