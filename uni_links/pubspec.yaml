@@ -6,10 +6,8 @@ homepage: https://github.com/avioli/uni_links/tree/master/uni_links
 dependencies:
   flutter:
     sdk: flutter
-  uni_links_platform_interface:
-    path: '../uni_links_platform_interface' # TODO this must change to a version from pub.dev before publishing
-  uni_links_web:
-    path: '../uni_links_web' # TODO this must change to a version from pub.dev before publishing
+  uni_links_platform_interface: ^1.0.0
+  uni_links_web: ^0.1.0
 
 dev_dependencies:
   flutter_test:
