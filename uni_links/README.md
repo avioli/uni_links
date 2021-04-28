@@ -195,9 +195,16 @@ There are two ways your app will recieve a link - from cold start and brought
 from the background. More on these after the example usage in
 [More about app start from a link](#more-about-app-start-from-a-link).
 
+**ATTENTION**: `getInitialLink`/`getInitialUri` should be handled *ONLY ONCE*
+in your app's lifetime, since it is not meant to change throughout your app's
+life.
+
 ### Initial Link (String)
 
 Returns the link that the app was started with, if any.
+
+You should handle this very early in your app's life and handle it only once.
+Feel free to read the value as many times as you wish, but only handle it once.
 
 ```dart
 import 'dart:async';
@@ -227,6 +234,9 @@ import 'package:flutter/services.dart' show PlatformException;
 ### Initial Link (Uri)
 
 Same as the `getInitialLink`, but converted to a `Uri`.
+
+NOTE: You should handle this very early in your app's life and _handle_ it only
+once.
 
 ```dart
     // Uri parsing may fail, so we use a try/catch FormatException.
