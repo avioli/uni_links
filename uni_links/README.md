@@ -348,6 +348,7 @@ Assuming you've installed Android Studio (with the SDK platform tools):
 adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://host/path/subpath"'
 adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://example.com/path/portion/?uid=123&token=abc"'
 adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://example.com/?arr%5b%5d=123&arr%5b%5d=abc&addr=1%20Nowhere%20Rd&addr=Rand%20City%F0%9F%98%82"'
+adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://@@malformed.invalid.url/path?"'
 ```
 
 If you don't have [`adb`](https://developer.android.com/studio/command-line/adb)
@@ -379,6 +380,7 @@ Assuming you've got Xcode already installed:
 /usr/bin/xcrun simctl openurl booted "unilinks://host/path/subpath"
 /usr/bin/xcrun simctl openurl booted "unilinks://example.com/path/portion/?uid=123&token=abc"
 /usr/bin/xcrun simctl openurl booted "unilinks://example.com/?arr%5b%5d=123&arr%5b%5d=abc&addr=1%20Nowhere%20Rd&addr=Rand%20City%F0%9F%98%82"
+/usr/bin/xcrun simctl openurl booted "unilinks://@@malformed.invalid.url/path?"
 ```
 
 If you've got `xcrun` (or `simctl`) in your path, you could invoke it directly.
