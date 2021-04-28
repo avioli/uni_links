@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uni_links/uni_links.dart';
 
+bool _initialUriIsHandled = false;
+
 void main() => runApp(MaterialApp(home: MyApp()));
 
 class MyApp extends StatefulWidget {
@@ -13,151 +15,91 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-enum UniLinksType { string, uri }
-
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
-  String? _initialLink;
   Uri? _initialUri;
-  String? _latestLink = 'Unknown';
   Uri? _latestUri;
+  Object? _err;
 
   StreamSubscription? _sub;
 
-  late final TabController _tabController;
-  UniLinksType _type = UniLinksType.string;
-
-  final List<String>? _cmds = getCmds();
-  final TextStyle _cmdStyle = const TextStyle(
+  final _scaffoldKey = GlobalKey();
+  final _cmds = getCmds();
+  final _cmdStyle = const TextStyle(
       fontFamily: 'Courier', fontSize: 12.0, fontWeight: FontWeight.w700);
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 2)
-      ..addListener(_handleTabChange);
-    initPlatformState();
+    _handleIncomingLinks();
+    _handleInitialUri();
   }
 
   @override
   void dispose() {
     _sub?.cancel();
-    _tabController.dispose();
     super.dispose();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    if (_type == UniLinksType.string) {
-      await initPlatformStateForStringUniLinks();
-    } else {
-      await initPlatformStateForUriUniLinks();
-    }
-  }
-
-  /// An implementation using a [String] link
-  Future<void> initPlatformStateForStringUniLinks() async {
-    // Attach a listener to the links stream
-    if (!kIsWeb)
-      _sub = linkStream.listen((String? link) {
-        if (!mounted) return;
-        setState(() {
-          _latestLink = link ?? 'Unknown';
-          _latestUri = null;
-          try {
-            if (link != null) _latestUri = Uri.parse(link);
-          } on FormatException {}
-        });
-      }, onError: (Object err) {
-        if (!mounted) return;
-        setState(() {
-          _latestLink = 'Failed to get latest link: $err.';
-          _latestUri = null;
-        });
-      });
-
-    // Attach a second listener to the stream
-    if (!kIsWeb)
-      linkStream.listen((String? link) {
-        print('got link: $link');
-      }, onError: (Object err) {
-        print('got err: $err');
-      });
-
-    // Get the latest link
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      _initialLink = await getInitialLink();
-      print('initial link: $_initialLink');
-      if (_initialLink != null) _initialUri = Uri.parse(_initialLink!);
-    } on PlatformException {
-      _initialLink = 'Failed to get initial link.';
-      _initialUri = null;
-    } on FormatException {
-      _initialLink = 'Failed to parse the initial link as Uri.';
-      _initialUri = null;
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _latestLink = _initialLink;
-      _latestUri = _initialUri;
-    });
-  }
-
-  /// An implementation using the [Uri] convenience helpers
-  Future<void> initPlatformStateForUriUniLinks() async {
-    // Attach a listener to the Uri links stream
-    if (!kIsWeb)
+  /// Handle incoming links - the ones that the app will recieve from the OS
+  /// while already started.
+  void _handleIncomingLinks() {
+    if (!kIsWeb) {
+      // It will handle app links while the app is already started - be it in
+      // the foreground or in the background.
       _sub = uriLinkStream.listen((Uri? uri) {
         if (!mounted) return;
+        print('got uri: $uri');
         setState(() {
           _latestUri = uri;
-          _latestLink = uri?.toString() ?? 'Unknown';
+          _err = null;
         });
       }, onError: (Object err) {
         if (!mounted) return;
+        print('got err: $err');
         setState(() {
           _latestUri = null;
-          _latestLink = 'Failed to get latest link: $err.';
+          if (err is FormatException) {
+            _err = err;
+          } else {
+            _err = null;
+          }
         });
       });
-
-    // Attach a second listener to the stream
-    if (!kIsWeb)
-      uriLinkStream.listen((Uri? uri) {
-        print('got uri: ${uri?.path} ${uri?.queryParametersAll}');
-      }, onError: (Object err) {
-        print('got err: $err');
-      });
-
-    // Get the latest Uri
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      _initialUri = await getInitialUri();
-      print('initial uri: ${_initialUri?.path}'
-          ' ${_initialUri?.queryParametersAll}');
-      _initialLink = _initialUri?.toString();
-    } on PlatformException {
-      _initialUri = null;
-      _initialLink = 'Failed to get initial uri.';
-    } on FormatException {
-      _initialUri = null;
-      _initialLink = 'Bad parse the initial link as Uri.';
     }
+  }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _latestUri = _initialUri;
-      _latestLink = _initialLink;
-    });
+  /// Handle the initial Uri - the one the app was started with
+  ///
+  /// **ATTENTION**: `getInitialLink`/`getInitialUri` should be handled
+  /// ONLY ONCE in your app's lifetime, since it is not meant to change
+  /// throughout your app's life.
+  ///
+  /// We handle all exceptions, since it is called from initState.
+  Future<void> _handleInitialUri() async {
+    // In this example app this is an almost useless guard, but it is here to
+    // show we are not going to call getInitialUri multiple times, even if this
+    // was a weidget that will be disposed of (ex. a navigation route change).
+    if (!_initialUriIsHandled) {
+      _initialUriIsHandled = true;
+      _showSnackBar('_handleInitialUri called');
+      try {
+        final uri = await getInitialUri();
+        if (uri == null) {
+          print('no initial uri');
+        } else {
+          print('got initial uri: $uri');
+        }
+        if (!mounted) return;
+        setState(() => _initialUri = uri);
+      } on PlatformException {
+        // Platform messages may fail but we ignore the exception
+        print('falied to get initial uri');
+      } on FormatException catch (err) {
+        if (!mounted) return;
+        print('malformed initial uri');
+        setState(() => _err = err);
+      }
+    }
   }
 
   @override
@@ -165,62 +107,46 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     final queryParams = _latestUri?.queryParametersAll.entries.toList();
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Plugin example app'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'STRING LINK'),
-            Tab(text: 'URI'),
-          ],
-        ),
+        title: const Text('uni_links example app'),
       ),
       body: ListView(
         shrinkWrap: true,
         padding: const EdgeInsets.all(8.0),
         children: [
-          ListTile(
-            title: const Text('Initial Link'),
-            subtitle: Text('$_initialLink'),
-          ),
-          if (!kIsWeb)
+          if (_err != null)
             ListTile(
-              title: const Text('Link'),
-              subtitle: Text('$_latestLink'),
+              title: const Text('Error', style: TextStyle(color: Colors.red)),
+              subtitle: Text('$_err'),
             ),
           ListTile(
-            title: const Text('Uri Path'),
-            subtitle: Text('${_latestUri?.path}'),
+            title: const Text('Initial Uri'),
+            subtitle: Text('$_initialUri'),
           ),
-          ExpansionTile(
-            initiallyExpanded: true,
-            title: const Text('Query params'),
-            children: queryParams == null
-                ? const [
-                    ListTile(
-                      dense: true,
-                      title: const Text('null'),
-                    ),
-                  ]
-                : [
-                    for (final item in queryParams)
-                      ListTile(
-                        title: Text(item.key),
-                        trailing: Text(
-                          item.value.join(', '),
-                        ),
-                      ),
-                  ],
-          ),
-          _cmdsCard(_cmds),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.error, color: Colors.red),
-            title: const Text(
-              'Force quit this example app',
-              style: TextStyle(color: Colors.red),
+          if (!kIsWeb) ...[
+            ListTile(
+              title: const Text('Latest Uri'),
+              subtitle: Text('$_latestUri'),
             ),
-          ),
+            ListTile(
+              title: const Text('Latest Uri (path)'),
+              subtitle: Text('${_latestUri?.path}'),
+            ),
+            ExpansionTile(
+              initiallyExpanded: true,
+              title: const Text('Latest Uri (query parameters)'),
+              children: queryParams == null
+                  ? const [ListTile(dense: true, title: Text('null'))]
+                  : [
+                      for (final item in queryParams)
+                        ListTile(
+                          title: Text(item.key),
+                          trailing: Text(item.value.join(', ')),
+                        )
+                    ],
+            ),
+          ],
           _cmdsCard(_cmds),
           const Divider(),
           if (!kIsWeb)
@@ -231,7 +157,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 style: TextStyle(color: Colors.red),
               ),
               onTap: () {
-                if (kIsWeb) return;
                 // WARNING: DO NOT USE this in production !!!
                 //          Your app will (most probably) be rejected !!!
                 if (Platform.isIOS) {
@@ -255,7 +180,10 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       platformCmds = Column(
         children: [
           const [
-            Text('To populate above fields open a terminal shell and run:\n'),
+            if (kIsWeb)
+              Text('Append this path to the Web app\'s URL, replacing `#/`:\n')
+            else
+              Text('To populate above fields open a terminal shell and run:\n'),
           ],
           intersperse(
               commands.map<Widget>((cmd) => InkWell(
@@ -284,15 +212,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     );
   }
 
-  void _handleTabChange() {
-    if (_tabController.indexIsChanging) {
-      setState(() {
-        _type = UniLinksType.values[_tabController.index];
-      });
-      initPlatformState();
-    }
-  }
-
   Future<void> _printAndCopy(String cmd) async {
     print(cmd);
 
@@ -301,16 +220,38 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       const SnackBar(content: Text('Copied to Clipboard')),
     );
   }
+
+  void _showSnackBar(String msg) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      final context = _scaffoldKey.currentContext;
+      if (context != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(msg),
+        ));
+      }
+    });
+  }
 }
 
 List<String>? getCmds() {
   late final String cmd;
   var cmdSuffix = '';
 
+  const plainPath = 'path/subpath';
+  const args = 'path/portion/?uid=123&token=abc';
+  const emojiArgs =
+      '?arr%5b%5d=123&arr%5b%5d=abc&addr=1%20Nowhere%20Rd&addr=Rand%20City%F0%9F%98%82';
+
   if (kIsWeb) {
-    cmd = 'Append something like the path in';
-    cmdSuffix = ' to the Web app\'s URL';
-  } else if (Platform.isIOS) {
+    return [
+      plainPath,
+      args,
+      emojiArgs,
+      // Cannot create malformed url, since the browser will ensure it is valid
+    ];
+  }
+
+  if (Platform.isIOS) {
     cmd = '/usr/bin/xcrun simctl openurl booted';
   } else if (Platform.isAndroid) {
     cmd = '\$ANDROID_HOME/platform-tools/adb shell \'am start'
@@ -323,10 +264,10 @@ List<String>? getCmds() {
 
   // https://orchid-forgery.glitch.me/mobile/redirect/
   return [
-    '$cmd "unilinks://host/path/subpath"$cmdSuffix',
-    '$cmd "unilinks://example.com/path/portion/?uid=123&token=abc"$cmdSuffix',
-    '$cmd "unilinks://example.com/?arr%5b%5d=123&arr%5b%5d=abc'
-        '&addr=1%20Nowhere%20Rd&addr=Rand%20City%F0%9F%98%82"$cmdSuffix',
+    '$cmd "unilinks://host/$plainPath"$cmdSuffix',
+    '$cmd "unilinks://example.com/$args"$cmdSuffix',
+    '$cmd "unilinks://example.com/$emojiArgs"$cmdSuffix',
+    '$cmd "unilinks://@@malformed.invalid.url/path?"$cmdSuffix',
   ];
 }
 
