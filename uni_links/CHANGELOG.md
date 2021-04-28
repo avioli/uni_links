@@ -1,3 +1,7 @@
+## [0.5.0+2] - 2021-04-28
+
+* Update README to add steps to add associated-domains entitlement via Xcode. (Need a version change to publish to pub.dev)
+
 ## [0.5.0+1] - 2021-04-28
 
 * Add `uni_links_web` to the list of platform definitions.
