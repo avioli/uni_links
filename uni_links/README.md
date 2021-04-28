@@ -20,6 +20,15 @@ especiallly for App/Universal Links (the https scheme).
 To use the plugin, add `uni_links` as a
 [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
+**0.5.0 Breaking changes**
+
+  Due to the migration to [null safety](https://dart.dev/null-safety), some APIs have changed. These changes
+  mainly involve functions changing into getters, and types becoming
+  explicitly nullable.  
+
+  The changes to the example package are a good example of how to upgrade to
+  this version.
+
 
 ### Permission
 
