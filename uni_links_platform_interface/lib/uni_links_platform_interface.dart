@@ -33,12 +33,16 @@ abstract class UniLinksPlatform extends PlatformInterface {
 
   /// Returns a [Future], which completes to the initially stored link, which
   /// may be null.
+  ///
+  /// NOTE: base code found in [MethodChannelUniLinks.getInitialLink]
   Future<String?> getInitialLink() => throw UnimplementedError(
       'getInitialLink() has not been implemented on the current platform.');
 
   /// A broadcast stream for receiving incoming link change events.
   ///
   /// The [Stream] emits opened links as [String]s.
+  ///
+  /// NOTE: base code found in [MethodChannelUniLinks.linkStream]
   Stream<String?> get linkStream => throw UnimplementedError(
       'getLinksStream has not been implemented on the current platform.');
 }
