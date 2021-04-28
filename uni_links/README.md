@@ -1,7 +1,5 @@
 # Uni Links
 
-[![Travis' Continuous Integration build status](https://api.travis-ci.org/avioli/uni_links.svg?branch=master)](https://travis-ci.org/avioli/uni_links)
-
 A Flutter plugin project to help with App/Deep Links (Android) and
 Universal Links and Custom URL schemes (iOS).
 
