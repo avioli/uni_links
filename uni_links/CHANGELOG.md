@@ -1,3 +1,8 @@
+## [0.5.0+1] - 2021-04-28
+
+* Add `uni_links_web` to the list of platform definitions.
+* Update example app and README to highlight handling of the initial link.
+
 ## [0.5.0] - 2021-04-28
 
 **Breaking changes**  
