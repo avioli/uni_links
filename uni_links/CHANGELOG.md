@@ -1,3 +1,7 @@
+## [0.5.1] - 2021-04-28
+
+* Add the `getLinksStream()` and `getUriLinksStream()` methods back (flagged as deprecated) since they were removed.
+
 ## [0.5.0+2] - 2021-04-28
 
 * Update README to add steps to add associated-domains entitlement via Xcode. (Need a version change to publish to pub.dev)
