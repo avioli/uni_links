@@ -32,6 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <!-- Deep links -->
+            <!-- Scheme+host filter -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -40,6 +41,7 @@
                     android:scheme="unilinks"
                     android:host="example.com" />
             </intent-filter>
+            <!-- Scheme+host+pathPrefix filter -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -48,6 +50,13 @@
                     android:scheme="unilinks"
                     android:host="host"
                     android:pathPrefix="/path/subpath" />
+            </intent-filter>
+            <!-- Scheme-only filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="unilinks" />
             </intent-filter>
         </activity>
         <activity
