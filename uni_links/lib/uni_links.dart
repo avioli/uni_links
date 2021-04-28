@@ -40,3 +40,19 @@ late final uriLinkStream = linkStream.transform<Uri?>(
     },
   ),
 );
+
+/// A broadcast stream for receiving incoming link change events.
+///
+/// The [Stream] emits opened links as [String]s.
+@Deprecated('Use [linkStream]')
+Stream<String?> getLinksStream() => linkStream;
+
+/// A convenience transformation of the [linkStream] to a `Stream<Uri>`.
+///
+/// If the link is not valid as a URI or URI reference,
+/// a [FormatException] is thrown.
+///
+/// If the app was stared by a link intent or user activity the stream will
+/// not emit that initial uri - query either the `getInitialUri` instead.
+@Deprecated('Use [uriLinkStream]')
+Stream<Uri?> getUriLinksStream() => uriLinkStream;

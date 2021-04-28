@@ -317,7 +317,7 @@ import 'package:uni_links/uni_links.dart';
     // ... check initialUri
 
     // Attach a listener to the stream
-    _sub = getUriLinksStream().listen((Uri? uri) {
+    _sub = uriLinkStream.listen((Uri? uri) {
       // Use the uri and warn the user, if it is not correct
     }, onError: (err) {
       // Handle exception by warning the user their action did not succeed
