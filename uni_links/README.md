@@ -127,8 +127,8 @@ You need to declare at least one of the two.
 --
 
 For **Universal Links** you need to add or create a
-`com.apple.developer.associated-domains` entitlement - either through Xcode or
-by editing (or creating and adding to Xcode) `ios/Runner/Runner.entitlements`
+`com.apple.developer.associated-domains` entitlement - either through Xcode
+(see below) or by editing (or creating and adding to Xcode) `ios/Runner/Runner.entitlements`
 file.
 
 ```xml
@@ -147,6 +147,17 @@ file.
 ```
 
 This allows for your app to be started from `https://YOUR_HOST` links.
+
+**Creating the entitlements file in Xcode**:
+
+ - Open up Xcode by double-clicking on your `ios/Runner.xcworkspace` file.
+ - Go to the Project navigator (Cmd+1) and select the `Runner` root item at the very top.
+ - Select the `Runner` target and then the `Signing & Capabilities` tab.
+ - Click the `+ Capability` (plus) button to add a new capability.
+ - Type 'associated domains` and select the item.
+ - Double-click the first item in the Domains list and change it from `webcredentials:example.com` to: `applinks:` + your host (ex: my-fancy-domain.com).
+ - A file called `Runner.entitlements` will be created and added to the project.
+ - Done. [Here's a screenshot](https://github.com/avioli/uni_links/blob/master/resources/associated-domains.png).
 
 For more information, read Apple's guide for
 [Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
