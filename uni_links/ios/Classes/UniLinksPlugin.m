@@ -80,7 +80,7 @@ static id _instance;
     if(self.initialLink) {
       result(self.initialLink);
     } else if(self.latestLink) {
-      result(self.initialLink);
+      result(self.latestLink);
     } else result(FlutterMethodNotImplemented);
     // } else if ([@"getLatestLink" isEqualToString:call.method]) {
     //     result(self.latestLink);
