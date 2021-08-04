@@ -81,7 +81,7 @@ static id _instance;
       result(self.initialLink);
     } else if(self.latestLink) {
       result(self.latestLink);
-    } else result(FlutterMethodNotImplemented);
+    } result(nil);
     // } else if ([@"getLatestLink" isEqualToString:call.method]) {
     //     result(self.latestLink);
   } else {
