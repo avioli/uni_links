@@ -77,7 +77,11 @@ static id _instance;
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"getInitialLink" isEqualToString:call.method]) {
-    result(self.initialLink);
+    if(self.initialLink) {
+      result(self.initialLink);
+    } else if(self.latestLink) {
+      result(self.latestLink);
+    } result(nil);
     // } else if ([@"getLatestLink" isEqualToString:call.method]) {
     //     result(self.latestLink);
   } else {
