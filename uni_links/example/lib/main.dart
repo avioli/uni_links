@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  /// Handle incoming links - the ones that the app will recieve from the OS
+  /// Handle incoming links - the ones that the app will receive from the OS
   /// while already started.
   void _handleIncomingLinks() {
     if (!kIsWeb) {
@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   Future<void> _handleInitialUri() async {
     // In this example app this is an almost useless guard, but it is here to
     // show we are not going to call getInitialUri multiple times, even if this
-    // was a weidget that will be disposed of (ex. a navigation route change).
+    // was a widget that will be disposed of (ex. a navigation route change).
     if (!_initialUriIsHandled) {
       _initialUriIsHandled = true;
       _showSnackBar('_handleInitialUri called');
@@ -93,7 +93,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         setState(() => _initialUri = uri);
       } on PlatformException {
         // Platform messages may fail but we ignore the exception
-        print('falied to get initial uri');
+        print('failed to get initial uri');
       } on FormatException catch (err) {
         if (!mounted) return;
         print('malformed initial uri');
