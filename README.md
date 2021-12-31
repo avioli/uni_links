@@ -1,7 +1,5 @@
 # Uni Links
 
-[![Travis' Continuous Integration build status](https://api.travis-ci.org/avioli/uni_links.svg?branch=master)](https://travis-ci.org/avioli/uni_links)
-
 A Flutter plugin project to help with App/Deep Links (Android) and
 Universal Links and Custom URL schemes (iOS).
 
@@ -21,6 +19,15 @@ especiallly for App/Universal Links (the https scheme).
 
 To use the plugin, add `uni_links` as a
 [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+
+**0.5.0 Breaking changes**
+
+  Due to the migration to [null safety](https://dart.dev/null-safety), some APIs have changed. These changes
+  mainly involve functions changing into getters, and types becoming
+  explicitly nullable.  
+
+  The changes to the example package are a good example of how to upgrade to
+  this version.
 
 
 ### Permission
@@ -120,8 +127,8 @@ You need to declare at least one of the two.
 --
 
 For **Universal Links** you need to add or create a
-`com.apple.developer.associated-domains` entitlement - either through Xcode or
-by editing (or creating and adding to Xcode) `ios/Runner/Runner.entitlements`
+`com.apple.developer.associated-domains` entitlement - either through Xcode
+(see below) or by editing (or creating and adding to Xcode) `ios/Runner/Runner.entitlements`
 file.
 
 ```xml
@@ -140,6 +147,17 @@ file.
 ```
 
 This allows for your app to be started from `https://YOUR_HOST` links.
+
+**Creating the entitlements file in Xcode**:
+
+ - Open up Xcode by double-clicking on your `ios/Runner.xcworkspace` file.
+ - Go to the Project navigator (Cmd+1) and select the `Runner` root item at the very top.
+ - Select the `Runner` target and then the `Signing & Capabilities` tab.
+ - Click the `+ Capability` (plus) button to add a new capability.
+ - Type 'associated domains` and select the item.
+ - Double-click the first item in the Domains list and change it from `webcredentials:example.com` to: `applinks:` + your host (ex: my-fancy-domain.com).
+ - A file called `Runner.entitlements` will be created and added to the project.
+ - Done. [Here's a screenshot](https://github.com/avioli/uni_links/blob/master/resources/associated-domains.png).
 
 For more information, read Apple's guide for
 [Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
@@ -188,9 +206,16 @@ There are two ways your app will recieve a link - from cold start and brought
 from the background. More on these after the example usage in
 [More about app start from a link](#more-about-app-start-from-a-link).
 
+**ATTENTION**: `getInitialLink`/`getInitialUri` should be handled *ONLY ONCE*
+in your app's lifetime, since it is not meant to change throughout your app's
+life.
+
 ### Initial Link (String)
 
 Returns the link that the app was started with, if any.
+
+You should handle this very early in your app's life and handle it only once.
+Feel free to read the value as many times as you wish, but only handle it once.
 
 ```dart
 import 'dart:async';
@@ -201,10 +226,10 @@ import 'package:flutter/services.dart' show PlatformException;
 
 // ...
 
-  Future<Null> initUniLinks() async {
+  Future<void> initUniLinks() async {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      String initialLink = await getInitialLink();
+      final initialLink = await getInitialLink();
       // Parse the link and warn the user, if it is not correct,
       // but keep in mind it could be `null`.
     } on PlatformException {
@@ -221,10 +246,13 @@ import 'package:flutter/services.dart' show PlatformException;
 
 Same as the `getInitialLink`, but converted to a `Uri`.
 
+NOTE: You should handle this very early in your app's life and _handle_ it only
+once.
+
 ```dart
     // Uri parsing may fail, so we use a try/catch FormatException.
     try {
-      Uri initialUri = await getInitialUri();
+      final initialUri = await getInitialUri();
       // Use the uri and warn the user, if it is not correct,
       // but keep in mind it could be `null`.
     } on FormatException {
@@ -252,11 +280,11 @@ import 'package:uni_links/uni_links.dart';
 
   StreamSubscription _sub;
 
-  Future<Null> initUniLinks() async {
+  Future<void> initUniLinks() async {
     // ... check initialLink
 
     // Attach a listener to the stream
-    _sub = getLinksStream().listen((String link) {
+    _sub = linkStream.listen((String? link) {
       // Parse the link and warn the user, if it is not correct
     }, onError: (err) {
       // Handle exception by warning the user their action did not succeed
@@ -271,7 +299,7 @@ import 'package:uni_links/uni_links.dart';
 
 ### On change event (Uri)
 
-Same as the `stream`, but transformed to emit `Uri` objects.
+Same as the `linkStream`, but transformed to emit `Uri` objects.
 
 Usually you would check the `getInitialUri` and also listen for changes.
 
@@ -285,11 +313,11 @@ import 'package:uni_links/uni_links.dart';
 
   StreamSubscription _sub;
 
-  Future<Null> initUniLinks() async {
+  Future<void> initUniLinks() async {
     // ... check initialUri
 
     // Attach a listener to the stream
-    _sub = getUriLinksStream().listen((Uri uri) {
+    _sub = uriLinkStream.listen((Uri? uri) {
       // Use the uri and warn the user, if it is not correct
     }, onError: (err) {
       // Handle exception by warning the user their action did not succeed
@@ -331,6 +359,7 @@ Assuming you've installed Android Studio (with the SDK platform tools):
 adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://host/path/subpath"'
 adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://example.com/path/portion/?uid=123&token=abc"'
 adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://example.com/?arr%5b%5d=123&arr%5b%5d=abc&addr=1%20Nowhere%20Rd&addr=Rand%20City%F0%9F%98%82"'
+adb shell 'am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "unilinks://@@malformed.invalid.url/path?"'
 ```
 
 If you don't have [`adb`](https://developer.android.com/studio/command-line/adb)
@@ -362,6 +391,7 @@ Assuming you've got Xcode already installed:
 /usr/bin/xcrun simctl openurl booted "unilinks://host/path/subpath"
 /usr/bin/xcrun simctl openurl booted "unilinks://example.com/path/portion/?uid=123&token=abc"
 /usr/bin/xcrun simctl openurl booted "unilinks://example.com/?arr%5b%5d=123&arr%5b%5d=abc&addr=1%20Nowhere%20Rd&addr=Rand%20City%F0%9F%98%82"
+/usr/bin/xcrun simctl openurl booted "unilinks://@@malformed.invalid.url/path?"
 ```
 
 If you've got `xcrun` (or `simctl`) in your path, you could invoke it directly.
@@ -382,6 +412,8 @@ replacing `unilinks` with `https`.
 For help on editing plugin code, view the
 [documentation](https://flutter.io/platform-plugins/#edit-code).
 
+This plugin uses the federated plugin architecture. New implementations must add the `uni_links_platform_interface` package to their `pubspec.yaml`, extend the `UniLinksPlatform` class, and register it properly.  
+More information about federated plugins can be found in the [proposal document](https://docs.google.com/document/d/1LD7QjmzJZLCopUrFAAE98wOUQpjmguyGTN2wd_89Srs), the [Flutter plugin documentation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#federated-plugins), and [Harry Terkelsen's Medium story describing the architecture](https://medium.com/flutter/how-to-write-a-flutter-web-plugin-part-2-afdddb69ece6).
 
 ## License
 

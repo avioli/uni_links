@@ -37,12 +37,12 @@ void main() {
   });
 
   test('getLinksStream', () async {
-    final stream = getLinksStream();
-    expect(stream, isInstanceOf<Stream<String>>());
+    final stream = linkStream;
+    expect(stream, isInstanceOf<Stream<String?>>());
   });
 
   test('getUriLinksStream', () async {
-    final stream = getUriLinksStream();
-    expect(stream, isInstanceOf<Stream<Uri>>());
+    final stream = uriLinkStream;
+    expect(stream, isInstanceOf<Stream<Uri?>>());
   });
 }

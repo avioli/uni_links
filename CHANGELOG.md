@@ -1,3 +1,26 @@
+## [0.5.1] - 2021-04-28
+
+* Add the `getLinksStream()` and `getUriLinksStream()` methods back (flagged as deprecated) since they were removed.
+
+## [0.5.0+2] - 2021-04-28
+
+* Update README to add steps to add associated-domains entitlement via Xcode. (Need a version change to publish to pub.dev)
+
+## [0.5.0+1] - 2021-04-28
+
+* Add `uni_links_web` to the list of platform definitions.
+* Update example app and README to highlight handling of the initial link.
+
+## [0.5.0] - 2021-04-28
+
+**Breaking changes**  
+  Due to the migration to null safety, some APIs have changed. These changes mainly involve functions changing into getters, and types becoming explicitly nullable.  
+
+  The changes to the example package are a good example of how to upgrade to this version.
+
+* Support null safety. (@hacker1024)
+* Migrate to the federated plugin architecture, paving the way for Web support in the future. (@hacker1024)
+
 ## [0.4.0] - 2020-05-10
 
 * Reduce iOS compiler warnings #42 (@ened)
