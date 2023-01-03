@@ -96,8 +96,8 @@ matrix:
     #     - echo y | sdkmanager "patcher;v4" >/dev/null
     #     - sdkmanager --list
     #     - wget http://services.gradle.org/distributions/gradle-7.4-bin.zip
-    #     - unzip -qq gradle-7.1-bin.zip
-    #     - export GRADLE_HOME=$PWD/gradle-7.1
+    #     - unzip -qq gradle-7.4-bin.zip
+    #     - export GRADLE_HOME=$PWD/gradle-7.4
     #     - export PATH=$GRADLE_HOME/bin:$PATH
     #     - gradle -v
     #     - git clone https://github.com/flutter/flutter.git /tmp/flutter
