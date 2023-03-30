@@ -52,14 +52,14 @@ static id _instance;
   NSURL *url = (NSURL *)launchOptions[UIApplicationLaunchOptionsURLKey];
   self.initialLink = [url absoluteString];
   self.latestLink = self.initialLink;
-  return YES;
+  return NO;
 }
 
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   self.latestLink = [url absoluteString];
-  return YES;
+  return NO;
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -70,7 +70,7 @@ static id _instance;
     if (!_eventSink) {
       self.initialLink = self.latestLink;
     }
-    return YES;
+    return NO;
   }
   return NO;
 }
