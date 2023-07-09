@@ -108,7 +108,7 @@ public class UniLinksPlugin
         changeReceiver = null;
     }
 
-    @Override
+    
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         if (call.method.equals("getInitialLink")) {
             result.success(initialLink);
@@ -119,19 +119,19 @@ public class UniLinksPlugin
         }
     }
 
-    @Override
+    
     public boolean onNewIntent(Intent intent) {
         this.handleIntent(context, intent);
         return false;
     }
 
-    @Override
+    
     public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
         activityPluginBinding.addOnNewIntentListener(this);
         this.handleIntent(this.context, activityPluginBinding.getActivity().getIntent());
     }
 
-    @Override
+    
     public void onDetachedFromActivityForConfigChanges() {}
 
     @Override
