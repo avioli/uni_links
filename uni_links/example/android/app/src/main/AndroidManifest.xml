@@ -7,6 +7,18 @@
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!--  If you're targeting Android 30 (API level 30) or higher, you need to request permission to handle the specific deep link using -->
+
+    <queries>
+        <!-- Existing query elements -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data
+                android:scheme="[YOUR_SCHEME]"
+                android:host="[YOUR_HOST]" />
+        </intent>
+    </queries>
+
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
          In most cases you can leave this as-is, but you if you want to provide
